@@ -9,28 +9,42 @@
 import XCTest
 @testable import ReactiveCocoaSample
 
+class TrackDetailViewModelTests: XCTestCase {
+    func testCommitEditing() {
+        let track = Track(title: "Some track", albumTitle: "Some album", artist: "Some artist", trackIndex: 4, favorite: false)
+        let viewModel = TrackDetailViewModel(track: track)
+
+        // Simulate settng the track's title
+        viewModel.title.value = "Foobar"
+
+        // Assert that the viewModel did not yet commit the user's editing
+        XCTAssertEqual(viewModel.editedTrack.value.title, "Some track")
+
+        viewModel.commitEditing()
+
+        // Assert that the viewModel now contains the user's edited results
+        XCTAssertEqual(viewModel.editedTrack.value.title, "Foobar")
+    }
+
+    func testRevertEditing() {
+        let track = Track(title: "Some track", albumTitle: "Some album", artist: "Some artist", trackIndex: 4, favorite: false)
+        let viewModel = TrackDetailViewModel(track: track)
+
+        // Simulate settng the track's title
+        viewModel.title.value = "Foobar"
+
+        // Assert that the viewModel accepted the value, but did not yet commit the user's editing
+        XCTAssertEqual(viewModel.title.value, "Foobar")
+        XCTAssertEqual(viewModel.editedTrack.value.title, "Some track")
+
+        viewModel.revert()
+
+        // Assert that the viewModel's exposed properties have been updated with the reverted values
+        XCTAssertEqual(viewModel.editedTrack.value.title, "Some track")
+        XCTAssertEqual(viewModel.title.value, "Some track")
+    }
+}
+
 class ReactiveCocoaSampleTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-    
+
 }
