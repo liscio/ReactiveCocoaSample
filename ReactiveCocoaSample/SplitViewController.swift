@@ -9,17 +9,32 @@
 import Cocoa
 import ReactiveSwift
 
-final class SplitViewController: NSViewController {
-    var tracks: MutableProperty<[Track]>!
+final class SplitViewController: NSSplitViewController {
+    var tracks = MutableProperty<MutableProperty<[Track]>?>(nil)
 
-    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        if let master = segue.destinationController as? MasterViewController {
-            master.tracks.value = tracks
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        masterViewController.tracks <~ tracks
+
+        self.detailViewController.viewModel <~ masterViewController.selectedTrack.signal.map { (track: Track?) -> TrackDetailViewModel? in
+            return (track != nil) ? TrackDetailViewModel(track: track!) : nil
         }
-        else if let detail = segue.destinationController as? DetailViewController {
+    }
+
+    var masterViewController: MasterViewController {
+        guard let master = childViewControllers[0] as? MasterViewController else {
+            fatalError("Could not get master view controller")
         }
-        else {
-            fatalError("Unknown segue encountered.")
+
+        return master
+    }
+
+    var detailViewController: DetailViewController {
+        guard let detail = childViewControllers[1] as? DetailViewController else {
+            fatalError("Could not get detail view controller")
         }
+
+        return detail
     }
 }

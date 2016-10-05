@@ -19,35 +19,40 @@ final class MasterViewController: NSViewController {
 
     var tracks = MutableProperty<MutableProperty<[Track]>?>(nil)
 
+    var selectedTrack: Property<Track?>!
+
     override func viewDidLoad() {
+        super.viewDidLoad()
 
-        let propsSignal = tracks.signal
-        let tracksSignal: Signal<[Track], NoError> = propsSignal.flatMap(.latest) { (prop: MutableProperty<[Track]>?) -> [Track] in
-            return prop?.value ?? []
+        let tracksProperty = tracks.flatMap(.latest) { (prop: MutableProperty<[Track]>?) -> Property<[Track]> in
+            return prop == nil ? Property(value: []) : Property(prop!)
         }
-        let trackProp = Property(initial: [], then: tracksSignal)
 
-        delegate = MasterTableViewDelegate(viewController: self, tracks: trackProp)
-        dataSource = MasterTableViewDataSource(tableView: tableView, tracks: Property(tracks.flatMap(.latest) { $0 ?? MutableProperty([]) }))
+        delegate = MasterTableViewDelegate(viewController: self, tracks: tracksProperty)
+        dataSource = MasterTableViewDataSource(tableView: tableView, tracks: tracksProperty)
 
         tableView.delegate = delegate
         tableView.dataSource = dataSource
 
-        tracks.signal
+        selectedTrack = delegate.selectedTrackIndex.combineLatest(with: tracksProperty).map { $0 >= 0 ? $1[$0] : nil }
+
+        tracksProperty.signal
             .observe(on: UIScheduler())
-            .observeValues { _ in
+            .observeValues { tracks in
                 self.tableView.reloadData()
             }
     }
 }
 
 final class MasterTableViewDataSource: NSObject, NSTableViewDataSource {
-    let tracks: Property<[Track]>
+    let tracks: MutableProperty<[Track]>
     let tableView: NSTableView
 
     init(tableView: NSTableView, tracks: Property<[Track]>) {
         self.tableView = tableView
-        self.tracks = tracks
+        self.tracks = MutableProperty([])
+
+        self.tracks <~ tracks
 
         super.init()
     }
@@ -58,12 +63,23 @@ final class MasterTableViewDataSource: NSObject, NSTableViewDataSource {
 }
 
 final class MasterTableViewDelegate: NSObject, NSTableViewDelegate {
-    let tracks: Property<[Track]>
+    let tracks: MutableProperty<[Track]>
+
+    private let _selectedTrackIndex: MutableProperty<Int>
+    let selectedTrackIndex: Property<Int>
+
     weak var tableViewController: MasterViewController?
 
     init(viewController: MasterViewController, tracks: Property<[Track]>) {
         self.tableViewController = viewController
-        self.tracks = tracks
+        self.tracks = MutableProperty([])
+
+        self._selectedTrackIndex = MutableProperty(-1)
+        self.selectedTrackIndex = Property(_selectedTrackIndex)
+
+        self._selectedTrackIndex <~ NotificationCenter.default.rac_notifications(forName: Notification.Name.NSTableViewSelectionDidChange, object: viewController.tableView).map { ($0.object as? NSTableView)?.selectedRow ?? NSNotFound }
+
+        self.tracks <~ tracks
 
         super.init()
     }

@@ -15,9 +15,11 @@ final class WindowController: NSWindowController {
         Track(title: "Something Something Fun", albumTitle: "Something", artist: "Foo McBar", trackIndex: 3, favorite: false),
         ])
 
-    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        guard let splitController = segue.destinationController as? SplitViewController else { fatalError("Unexpected segue") }
+    override func windowDidLoad() {
+        super.windowDidLoad()
 
-        splitController.tracks = tracks
+        guard let splitController = self.contentViewController as? SplitViewController else { fatalError("Unexpected view controller") }
+
+        splitController.tracks.value = tracks
     }
 }
