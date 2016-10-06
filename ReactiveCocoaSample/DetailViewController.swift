@@ -20,16 +20,16 @@ final class DetailViewController: NSViewController, Bindable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.title ?? MutableProperty("") }
-        albumTitleTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.albumTitle ?? MutableProperty("") }
-        artistTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.artist ?? MutableProperty("") }
+        titleTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.title ?? MutableProperty("") }
+        albumTitleTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.albumTitle ?? MutableProperty("") }
+        artistTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.artist ?? MutableProperty("") }
 
         viewModel.signal.observeValues { [unowned self] in
             guard let viewModel = $0 else { return }
 
-            viewModel.title <~ self.titleTextField.rac.text
-            viewModel.albumTitle <~ self.albumTitleTextField.rac.text
-            viewModel.artist <~ self.artistTextField.rac.text
+            viewModel.title <~ self.titleTextField.rac.stringValues
+            viewModel.albumTitle <~ self.albumTitleTextField.rac.stringValues
+            viewModel.artist <~ self.artistTextField.rac.stringValues
         }
     }
 
