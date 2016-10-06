@@ -146,10 +146,37 @@ public final class TrackSelection {
                 track.albumTitle = title
                 return track
             })
+
+        self.artist = MutableOneToManyProperty(
+            selection: selection,
+            getter: { $0.artist },
+            setter: { (track: inout Track, title: String) -> Track in
+                track.artist = title
+                return track
+            })
+
+        self.trackIndex = MutableOneToManyProperty(
+            selection: selection,
+            getter: { $0.trackIndex },
+            setter: { (track: inout Track, newValue: Int) -> Track in
+                track.trackIndex = newValue
+                return track
+            })
+
+        self.favorite = MutableOneToManyProperty(
+            selection: selection,
+            getter: { $0.favorite },
+            setter: { (track: inout Track, newValue: Bool) -> Track in
+                track.favorite = newValue
+                return track
+            })
     }
 
     let title: MutableOneToManyProperty<Track, String>
     let albumTitle: MutableOneToManyProperty<Track, String>
+    let artist: MutableOneToManyProperty<Track, String>
+    let trackIndex: MutableOneToManyProperty<Track, Int>
+    let favorite: MutableOneToManyProperty<Track, Bool>
 
     private let token: Lifetime.Token
     private let lifetime: Lifetime

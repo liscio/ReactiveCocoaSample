@@ -42,10 +42,10 @@ final class TrackDataSource {
     }
 
     func insertNewTrack() {
-//        _tracks.modify { (tracks: inout [Track]) -> [Track] in
-//            tracks.append(.placeholder)
-//            return tracks
-//        }
+        _tracks.modify { (tracks: inout [MutableProperty<Track>]) -> [MutableProperty<Track>] in
+            tracks.append(MutableProperty(.placeholder))
+            return tracks
+        }
     }
 
     func replaceSelectedTrack(with track: Track) {
