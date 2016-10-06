@@ -18,11 +18,10 @@ final class SplitViewController: NSSplitViewController {
         masterViewController.dataSource <~ dataSource
 
         detailViewController.viewModel <~ dataSource
-            .flatMap(.latest) { $0?.selectedTrack ?? Property(value: nil) }
-            .map { (track: Track?) -> TrackDetailViewModel? in
-                track != nil ?
-                    TrackDetailViewModel(track: track!, dataSource: self.dataSource.value!)
-                    : nil
+            .flatMap(.latest) { (dataSource: TrackDataSource?) -> Property<TrackSelection?> in
+                dataSource != nil ?
+                    Property(value: TrackSelection(selection: dataSource!.selection))
+                    : Property(value: nil)
             }
     }
 

@@ -13,11 +13,7 @@ import enum Result.NoError
 
 extension Collection {
     func elements(at indexes: [Self.Index]) -> [Self.Iterator.Element] {
-        var subElements: [Self.Iterator.Element] = []
-        for index in indexes {
-            subElements.append(self[index])
-        }
-        return subElements
+        return indexes.map { self[$0] }
     }
 }
 
@@ -145,9 +141,9 @@ public final class TrackSelection {
 
         self.albumTitle = MutableOneToManyProperty(
             selection: selection,
-            getter: { $0.title },
+            getter: { $0.albumTitle },
             setter: { (track: inout Track, title: String) -> Track in
-                track.title = title
+                track.albumTitle = title
                 return track
             })
     }

@@ -20,26 +20,28 @@ final class DetailViewController: NSViewController, Bindable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.title ?? MutableProperty("") }
-        albumTitleTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.albumTitle ?? MutableProperty("") }
-        artistTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.artist ?? MutableProperty("") }
+        titleTextField.rac.value <~ viewModel.flatMap(.latest) { $0.title }
+        albumTitleTextField.rac.value <~ viewModel.flatMap(.latest) { $0.albumTitle }
+
+//        albumTitleTextField.rac.stringValue <~ viewModel.flatMap(.latest) { Property($0?.albumTitle) ?? Property(value: "") }
+//        artistTextField.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.artist ?? MutableProperty("") }
 
         viewModel.signal.observeValues { [unowned self] in
             guard let viewModel = $0 else { return }
 
-            viewModel.title <~ self.titleTextField.rac.stringValues
-            viewModel.albumTitle <~ self.albumTitleTextField.rac.stringValues
-            viewModel.artist <~ self.artistTextField.rac.stringValues
+            viewModel.title <~ self.titleTextField.rac.stringValues.map { .value($0) }
+            viewModel.albumTitle <~ self.albumTitleTextField.rac.stringValues.map { .value($0) }
+//            viewModel.artist <~ self.artistTextField.rac.stringValues
         }
     }
 
-    let viewModel = MutableProperty<TrackDetailViewModel?>(nil)
+    let viewModel = MutableProperty<TrackSelection?>(nil)
 
     @IBAction func apply(_ sender: NSButton?) {
-        viewModel.value?.commitEditing()
+//        viewModel.value?.commitEditing()
     }
 
     @IBAction func revert(_ sender: NSButton?) {
-        viewModel.value?.revert()
+//        viewModel.value?.revert()
     }
 }
