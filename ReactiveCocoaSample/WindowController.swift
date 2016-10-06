@@ -10,16 +10,17 @@ import Cocoa
 import ReactiveSwift
 
 final class WindowController: NSWindowController {
-    let tracks = MutableProperty([
-        Track(title: "Hello, World", albumTitle: "Something", artist: "Foo McBar", trackIndex: 4, favorite: false),
-        Track(title: "Something Something Fun", albumTitle: "Something", artist: "Foo McBar", trackIndex: 3, favorite: false),
-        ])
+    let dataSource = TrackDataSource()
 
     override func windowDidLoad() {
         super.windowDidLoad()
 
         guard let splitController = self.contentViewController as? SplitViewController else { fatalError("Unexpected view controller") }
 
-        splitController.tracks.value = tracks
+        splitController.dataSource.value = dataSource
+    }
+
+    @IBAction func newDocument(_ sender: AnyObject?) {
+        dataSource.insertNewTrack()
     }
 }

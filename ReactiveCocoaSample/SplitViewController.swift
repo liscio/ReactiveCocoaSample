@@ -10,16 +10,20 @@ import Cocoa
 import ReactiveSwift
 
 final class SplitViewController: NSSplitViewController {
-    var tracks = MutableProperty<MutableProperty<[Track]>?>(nil)
+    var dataSource = MutableProperty<TrackDataSource?>(nil)
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        masterViewController.tracks <~ tracks
+        masterViewController.dataSource <~ dataSource
 
-        self.detailViewController.viewModel <~ masterViewController.selectedTrack.signal.map { (track: Track?) -> TrackDetailViewModel? in
-            return (track != nil) ? TrackDetailViewModel(track: track!) : nil
-        }
+        detailViewController.viewModel <~ dataSource
+            .flatMap(.latest) { $0?.selectedTrack ?? Property(value: nil) }
+            .map { (track: Track?) -> TrackDetailViewModel? in
+                track != nil ?
+                    TrackDetailViewModel(track: track!, dataSource: self.dataSource.value!)
+                    : nil
+            }
     }
 
     var masterViewController: MasterViewController {

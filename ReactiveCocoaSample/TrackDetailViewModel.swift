@@ -18,7 +18,10 @@ public final class TrackDetailViewModel {
     public let favorite: MutableProperty<Bool>
 
     private var track: Track
-    init(track: Track) {
+    private let dataSource: TrackDataSource
+    init(track: Track, dataSource: TrackDataSource) {
+        self.dataSource = dataSource
+
         // Initialize all our properties with the current values of the supplied track model object.
         title = MutableProperty(track.title)
         artist = MutableProperty(track.artist)
@@ -42,6 +45,8 @@ public final class TrackDetailViewModel {
             trackIndex: trackIndex.value,
             favorite: favorite.value)
         _editedTrack.value = track
+
+        dataSource.replaceSelectedTrack(with: track)
     }
 
     func revert() {

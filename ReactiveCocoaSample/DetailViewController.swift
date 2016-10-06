@@ -11,17 +11,35 @@ import Result
 import ReactiveSwift
 import ReactiveCocoa
 
-final class DetailViewController: NSViewController {
+final class DetailViewController: NSViewController, Bindable {
     @IBOutlet var titleTextField: NSTextField!
     @IBOutlet var albumTitleTextField: NSTextField!
+    @IBOutlet var artistTextField: NSTextField!
+    @IBOutlet var favoriteCheckbox: NSButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleTextField.rac.text <~ self.viewModel.flatMap(.latest) { $0 != nil ? Property($0!.title) : Property(value: "") }
+        titleTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.title ?? MutableProperty("") }
+        albumTitleTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.albumTitle ?? MutableProperty("") }
+        artistTextField.rac.text <~ viewModel.flatMap(.latest) { $0?.artist ?? MutableProperty("") }
 
-        albumTitleTextField.rac.text <~ self.viewModel.flatMap(.latest) { $0 != nil ? Property($0!.albumTitle) : Property(value: "") }
+        viewModel.signal.observeValues { [unowned self] in
+            guard let viewModel = $0 else { return }
+
+            viewModel.title <~ self.titleTextField.rac.text
+            viewModel.albumTitle <~ self.albumTitleTextField.rac.text
+            viewModel.artist <~ self.artistTextField.rac.text
+        }
     }
 
     let viewModel = MutableProperty<TrackDetailViewModel?>(nil)
+
+    @IBAction func apply(_ sender: NSButton?) {
+        viewModel.value?.commitEditing()
+    }
+
+    @IBAction func revert(_ sender: NSButton?) {
+        viewModel.value?.revert()
+    }
 }
