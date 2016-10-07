@@ -20,8 +20,8 @@ final class TrackTableCellView: NSTableCellView, Bindable {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        titleLabel.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.title ?? Property(value: "") }
-        artistLabel.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.artist ?? Property(value: "") }
-        trackIndexLabel.rac.stringValue <~ viewModel.flatMap(.latest) { $0?.trackIndex.map { String(describing: $0) } ?? Property(value: "") }
+        titleLabel.reactive.stringValue <~ viewModel.flatMap(.latest) { $0?.title ?? Property(value: "") }
+        artistLabel.reactive.stringValue <~ viewModel.flatMap(.latest) { $0?.artist ?? Property(value: "") }
+        trackIndexLabel.reactive.stringValue <~ viewModel.flatMap(.latest) { $0?.trackIndex.map { String(describing: $0) } ?? Property(value: "") }
     }
 }

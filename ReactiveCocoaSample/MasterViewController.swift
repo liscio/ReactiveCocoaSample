@@ -31,7 +31,7 @@ final class MasterViewController: NSViewController, NSTableViewDelegate, NSTable
                 self.tableView.reloadData()
             }
 
-        let selectedRow = NotificationCenter.default.rac_notifications(forName: Notification.Name.NSTableViewSelectionDidChange, object: tableView).map { ($0.object as? NSTableView)?.selectedRowIndexes ?? IndexSet() }
+        let selectedRow = NotificationCenter.default.reactive.notifications(forName: Notification.Name.NSTableViewSelectionDidChange, object: tableView).map { ($0.object as? NSTableView)?.selectedRowIndexes ?? IndexSet() }
 
         // As the data source changes, we want to update its selected index when our table view's selected row changes
         dataSource.signal.observeValues { dataSource in
