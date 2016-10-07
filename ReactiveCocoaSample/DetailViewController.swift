@@ -23,6 +23,7 @@ final class DetailViewController: NSViewController, Bindable {
         titleTextField.reactive.value <~ viewModel.flatMap(.latest) { $0.title }
         albumTitleTextField.reactive.value <~ viewModel.flatMap(.latest) { $0.albumTitle }
         artistTextField.reactive.value <~ viewModel.flatMap(.latest) { $0.artist }
+        favoriteCheckbox.reactive.boolStateValue <~ viewModel.flatMap(.latest) { $0.favorite }
 
         viewModel.signal.observeValues { [unowned self] in
             guard let viewModel = $0 else { return }
@@ -30,6 +31,7 @@ final class DetailViewController: NSViewController, Bindable {
             viewModel.title <~ self.titleTextField.reactive.stringValues
             viewModel.albumTitle <~ self.albumTitleTextField.reactive.stringValues
             viewModel.artist <~ self.artistTextField.reactive.stringValues
+            viewModel.favorite <~ self.favoriteCheckbox.reactive.boolValues
         }
     }
 
