@@ -17,50 +17,29 @@ extension Collection {
     }
 }
 
-public final class Selection<C: Collection> where C.Iterator.Element: Equatable {
-    init(base: Property<C>, selectedIndexes: Property<[C.Index]>) {
-        self.base = base
-        self.selectedIndexes = selectedIndexes
-    }
+protocol SelectionProtocol {
+    associatedtype PropertyType: PropertyProtocol
 
-    let base: Property<C>
-    let selectedIndexes: Property<[C.Index]>
+    var base: Property<[PropertyType]> { get }
+    var selectedIndexes: Property<[Int]> { get }
+}
 
-    var selectedObjects: Property<[C.Iterator.Element]> {
+extension SelectionProtocol {
+    var selectedProperties: Property<[Self.PropertyType]> {
         return base.combineLatest(with: selectedIndexes).map { base, indexes in
             base.elements(at: indexes)
         }
     }
 
-    var value: Property<BindingValue<C.Iterator.Element>> {
-        return selectedObjects.map { BindingValue(values: $0) }
-    }
-}
-
-public final class MutableSelection<C: Collection> where C.Iterator.Element: MutablePropertyProtocol {
-    init(base: Property<C>, selectedIndexes: Property<[C.Index]>) {
-        self.base = base
-        self.selectedIndexes = selectedIndexes
-    }
-
-    let base: Property<C>
-    let selectedIndexes: Property<[C.Index]>
-
-    var selectedValues: Property<[C.Iterator.Element.Value]> {
+    var selectedValues: Property<[Self.PropertyType.Value]> {
         return selectedProperties.map { properties in
             properties.map { $0.value }
         }
     }
 
-    var selectedProperties: Property<[C.Iterator.Element]> {
-        return base.combineLatest(with: selectedIndexes).map { base, indexes in
-            base.elements(at: indexes)
-        }
-    }
-
-    /// This is the analog to Cocoa Bindings' "selection.key" binding over an 
+    /// This is the analog to Cocoa Bindings' "selection.key" binding over an
     /// array controller
-    func selection<U: Equatable>(getter: @escaping ((C.Iterator.Element.Value) -> U)) -> Property<BindingValue<U>> {
+    func selection<U: Equatable>(getter: @escaping ((Self.PropertyType.Value) -> U)) -> Property<BindingValue<U>> {
         return selectedValues
             .flatMap(.latest) {
                 Property(value: $0.map(getter) )
@@ -68,20 +47,47 @@ public final class MutableSelection<C: Collection> where C.Iterator.Element: Mut
             .map { BindingValue(values: $0)
         }
     }
+}
 
-    func set<U: Equatable>(newValue: U, setter: @escaping ((inout C.Iterator.Element.Value, U) -> C.Iterator.Element.Value)) {
+extension SelectionProtocol where PropertyType: MutablePropertyProtocol {
+    func set<U: Equatable>(newValue: U, setter: @escaping ((inout Self.PropertyType.Value, U) -> PropertyType.Value)) {
         for selected in selectedProperties.value {
             selected.value = setter(&selected.value, newValue)
         }
     }
 }
 
+public final class Selection<Value>: SelectionProtocol {
+    typealias PropertyType = Property<Value>
+
+    let base: Property<[PropertyType]>
+    let selectedIndexes: Property<[Int]>
+
+    init(base: Property<[PropertyType]>, selectedIndexes: Property<[Int]>) {
+        self.base = base
+        self.selectedIndexes = selectedIndexes
+    }
+}
+
+public final class MutableSelection<Value>: SelectionProtocol {
+    typealias PropertyType = MutableProperty<Value>
+    typealias Base = Property<[PropertyType]>
+
+    let base: Base
+    let selectedIndexes: Property<[Int]>
+
+    init(base: Base, selectedIndexes: Property<[Int]>) {
+        self.base = base
+        self.selectedIndexes = selectedIndexes
+    }
+}
+
 public final class MutableOneToManyProperty<ContainerValue, LensedValue: Equatable>: MutablePropertyProtocol {
-    let selection: MutableSelection<[MutableProperty<ContainerValue>]>
+    let selection: MutableSelection<ContainerValue>
 
     typealias Getter = ((ContainerValue) -> LensedValue)
     typealias Setter = ((inout ContainerValue, LensedValue) -> ContainerValue)
-    init(selection: MutableSelection<[MutableProperty<ContainerValue>]>, getter: @escaping Getter, setter: @escaping Setter) {
+    init(selection: MutableSelection<ContainerValue>, getter: @escaping Getter, setter: @escaping Setter) {
 
         self.selection = selection
         self.property = selection.selection(getter: getter)
@@ -91,15 +97,14 @@ public final class MutableOneToManyProperty<ContainerValue, LensedValue: Equatab
         self.lifetime = Lifetime(self.token)
     }
 
-    let property: Property<Value>
+    let property: Property<BindingValue<LensedValue>>
+
     let setter: Setter
 
     public let token: Lifetime.Token
     public let lifetime: Lifetime
 
-    public typealias Value = BindingValue<LensedValue>
-
-    public var value: Value {
+    public var value: BindingValue<LensedValue> {
         get {
             return property.value
         }
@@ -123,9 +128,9 @@ public final class MutableOneToManyProperty<ContainerValue, LensedValue: Equatab
 }
 
 public final class TrackSelection {
-    let selection: MutableSelection<[MutableProperty<Track>]>
+    let selection: MutableSelection<Track>
 
-    init(selection: MutableSelection<[MutableProperty<Track>]>) {
+    init(selection: MutableSelection<Track>) {
         token = Lifetime.Token()
         lifetime = Lifetime(token)
 

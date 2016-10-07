@@ -27,12 +27,12 @@ final class TrackDataSource {
 
     let selectedIndexes = MutableProperty<[Int]>([])
 
-    let selection: MutableSelection<[MutableProperty<Track>]>
+    let selection: MutableSelection<Track>
 
     init() {
         tracks = Property(_tracks)
 
-        selection = MutableSelection(base: tracks, selectedIndexes: Property(selectedIndexes))
+        selection = MutableSelection<Track>(base: tracks, selectedIndexes: Property(selectedIndexes))
 
         // Put some dummy values in for now
         _tracks.value = [
