@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8305361A1DA5BF3D00E58964 /* TrackDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830536191DA5BF3D00E58964 /* TrackDataSource.swift */; };
 		8305361C1DA5D39900E58964 /* Bindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8305361B1DA5D39900E58964 /* Bindable.swift */; };
+		830536221DA722FE00E58964 /* MutableOneToManyProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830536211DA722FE00E58964 /* MutableOneToManyProperty.swift */; };
+		830536241DA7242200E58964 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 830536231DA7242200E58964 /* Selection.swift */; };
 		83C784D51DA570CC00B77984 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C784D41DA570CC00B77984 /* AppDelegate.swift */; };
 		83C784D91DA570CC00B77984 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 83C784D81DA570CC00B77984 /* Assets.xcassets */; };
 		83C784DC1DA570CC00B77984 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 83C784DA1DA570CC00B77984 /* Main.storyboard */; };
@@ -61,6 +63,8 @@
 /* Begin PBXFileReference section */
 		830536191DA5BF3D00E58964 /* TrackDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackDataSource.swift; sourceTree = "<group>"; };
 		8305361B1DA5D39900E58964 /* Bindable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bindable.swift; sourceTree = "<group>"; };
+		830536211DA722FE00E58964 /* MutableOneToManyProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableOneToManyProperty.swift; sourceTree = "<group>"; };
+		830536231DA7242200E58964 /* Selection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		83C784D11DA570CC00B77984 /* ReactiveCocoaSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReactiveCocoaSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		83C784D41DA570CC00B77984 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		83C784D81DA570CC00B77984 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -177,6 +181,8 @@
 			children = (
 				83C784FB1DA572B000B77984 /* Track.swift */,
 				830536191DA5BF3D00E58964 /* TrackDataSource.swift */,
+				830536211DA722FE00E58964 /* MutableOneToManyProperty.swift */,
+				830536231DA7242200E58964 /* Selection.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -286,6 +292,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				830536241DA7242200E58964 /* Selection.swift in Sources */,
 				83C785091DA57AA000B77984 /* TrackTableCellView.swift in Sources */,
 				83C785031DA5784B00B77984 /* TrackTableCellViewModel.swift in Sources */,
 				83C785051DA5795F00B77984 /* MasterViewController.swift in Sources */,
@@ -296,6 +303,7 @@
 				83C785101DA5882100B77984 /* SplitViewController.swift in Sources */,
 				83C7850E1DA587AA00B77984 /* WindowController.swift in Sources */,
 				83C784FC1DA572B000B77984 /* Track.swift in Sources */,
+				830536221DA722FE00E58964 /* MutableOneToManyProperty.swift in Sources */,
 				83C785071DA579C900B77984 /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -15,12 +15,6 @@ extension Track {
     }
 }
 
-extension Int {
-    static var noSelection: Int {
-        return -1
-    }
-}
-
 final class TrackDataSource {
     private let _tracks = MutableProperty<[MutableProperty<Track>]>([])
     let tracks: Property<[MutableProperty<Track>]>
@@ -46,15 +40,5 @@ final class TrackDataSource {
             tracks.append(MutableProperty(.placeholder))
             return tracks
         }
-    }
-
-    func replaceSelectedTrack(with track: Track) {
-//        _tracks.modify { (tracks: inout [Track]) -> [Track] in
-//            if selectedIndex.value >= 0 {
-//                tracks[selectedIndex.value] = track
-//            }
-//
-//            return tracks
-//        }
     }
 }
